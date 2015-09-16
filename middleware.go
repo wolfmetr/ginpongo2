@@ -1,7 +1,7 @@
 package ginpongo2
 
 import (
-	"gopkg.in/flosch/pongo2.v3"
+	pongo2 "gopkg.in/flosch/pongo2.v3"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,10 +10,10 @@ func Pongo2() HandlerFunc {
 	return func(c *Context) {
 		c.Next()
 
-		templateName, templateNameError := c.Get("template")
+		templateName, templateExists := c.Get("template")
 		templateNameValue, isString := templateName.(string)
 
-		if templateNameError == nil && isString {
+		if templateExists && isString {
 			templateData, templateDataError := c.Get("data")
 			var template = pongo2.Must(pongo2.FromFile(templateNameValue))
 			err := template.ExecuteWriter(getContext(templateData, templateDataError), c.Writer)
