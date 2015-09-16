@@ -14,9 +14,9 @@ func Pongo2() HandlerFunc {
 		templateNameValue, isString := templateName.(string)
 
 		if templateExists && isString {
-			templateData, templateDataError := c.Get("data")
+			templateData, templateDataExists := c.Get("data")
 			var template = pongo2.Must(pongo2.FromFile(templateNameValue))
-			err := template.ExecuteWriter(getContext(templateData, templateDataError), c.Writer)
+			err := template.ExecuteWriter(getContext(templateData, templateDataExists), c.Writer)
 			if err != nil {
 				http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 			}
@@ -24,8 +24,8 @@ func Pongo2() HandlerFunc {
 	}
 }
 
-func getContext(templateData interface{}, err error) pongo2.Context {
-	if templateData == nil || err != nil {
+func getContext(templateData interface{}, exists bool) pongo2.Context {
+	if templateData == nil || !exists {
 		return nil
 	}
 	contextData, isMap := templateData.(map[string]interface{})
